@@ -60,7 +60,45 @@ III. Run a refresh-only plan
 $ terraform plan -refresh-only
 ```
 
-2. Apply these changes to make the state file match the real infrastructure, but not Terraform configuration. Respond to the prompt with a `yes`
+2. Apply these changes to make the state file match the real infrastructure, but not the Terraform configuration. Respond to the prompt with a `yes`
 ```
 $ terraform apply -refresh-only
+```
+
+IV. Add the security group to configuration
+
+1. Edit the `main.tf`. Add the created `aws_securitygroup` `sg_web`
+2. Add the `aws_security_group_rule` `sg_web`
+3. Add the security group ID to the instance resource 
+
+V. Import the security group
+
+1. Import the sec group
+```
+$ terraform import aws_security_group.sg_web $SG_ID
+```
+
+2. Import thr security group rule
+```
+$ terraform import aws_security_group_rule.sg_web "$SG_ID"_ingress_tcp_8080_8080_0.0.0.0/0
+```
+
+VI. Update the resources
+
+1. Now that the `sg_web` security group is represented in state, re-run `terraform apply` to associate the SSH security group with your EC2 instance.
+```
+$ terraform apply
+```
+
+VII. Access the instance
+```
+$ ssh ubuntu@$(terraform output -raw public_ip) -i key
+```
+```
+$ curl $(terraform output -raw public_ip):8080
+```
+
+VIII. Clean up the resources
+```
+$ terraform destroy
 ```
