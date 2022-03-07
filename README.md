@@ -51,3 +51,16 @@ $ aws ec2 modify-instance-attribute --instance-id $(terraform output -raw instan
 Now, the instance's SSH security group was replaced with a new security group that is not tracked in the Terraform state file.
 
 
+III. Run a refresh-only plan
+
+1. Run `terraform plan -refresh-only` to determine the drift between the current state file and actual configuration.
+***Tip: The `-refresh-only` flag was introduced in Terraform 0.15.4, and is preferred over the `terraform refresh` subcommand.***
+
+```
+$ terraform plan -refresh-only
+```
+
+2. Apply these changes to make the state file match the real infrastructure, but not Terraform configuration. Respond to the prompt with a `yes`
+```
+$ terraform apply -refresh-only
+```
